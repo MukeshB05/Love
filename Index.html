@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+Developer : wiz64 ,
+Contribute: https://github.com/wiz64/saavn-web-ui ,
+Don't forget to star the repo
+-->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>KDS Music Player</title>
+
+    <meta name="description" content="Saavn Music Player is an Ad-Free Music Player, High Quality MP3 Songs with Metadata support, and a Modern Design. A large library of songs. developed by wiz64">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Bitter:400,700">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body style="padding-bottom: 50px;background: rgb(0,0,0);">
+    <header class="header-dark" style="color: rgb(205,205,205);padding: 0px 0px 10px;">
+        <nav class="navbar navbar-dark navbar-expand-lg navigation-clean-search">
+            <div class="container"><a class="navbar-brand" href="#">KDS</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navcol-1">
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a class="btn btn-primary" role="button" ">update</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <h1 class="text-center" style="margin: 0px;">KDS</h1>
+                    <h3 class="text-center" style="color: rgba(249,255,255,0.81);font-family: Bitter, serif;">Music Player &amp; Downloader</h3>
+                    <p class="text-center" style="padding: 0px 5px;">Ad-Free, Metadata, &amp; Modern Design <br> free download</p>
+                </div>
+            </div>
+        </div>
+        
+    </header>
+    <div>
+        <div class="tab-content">
+            <div class="tab-pane active" role="tabpanel" id="tab-1">
+                <section class="highlight-clean" style="background: #000; color: rgb(249,249,249);padding-top: 20px;">
+                    <div class="text-center">
+                        <select id="saavn-bitrate">
+                            <option value="4">320kbps</option>
+                            <option value="3" selected="">160kbps</option>
+                            <option value="2">96kbps</option>
+                            <option value="1">48kbps</option>
+                        </select></div>
+                    <p class="text-center" style="padding: 0px 5px;"></p>
+                    <div class="container" style="padding: 0px;">
+                        <div class="intro">
+                            <form class="text-center" action="#" method="get">
+                                <div style="width: 95%;margin: auto;padding: 3px;" placeholder="Enter Song, Artist or Album name"><input class="form-control float-left fit-content" type="text" id="saavn-search-box" style="margin: 0px;color: var(--gray-dark);max-width: 100%;width: 75%;" placeholder="Enter Name, Year, Artist"><button class="btn btn-primary" id="saavn-search-trigger" type="submit" style="text-align: center;" onclick="SaavnSearch()">Search</button></div>
+                                <h5 class="text-uppercase text-center" style="color: rgb(165,255,184);">Results</h5>
+                            </form>
+                        </div>
+                            <div id="saavn-results" style="margin-bottom: 20px;">
+                                <h5>Featured</h5>
+                            </div>
+                            <div class="text-center" style="width:100%"><button id="loadmore" style="width: 100%;">Load More</button></div>
+                            <div class="button-container"></div>
+
+<style>
+  /* Style for the container to enable horizontal scrolling */
+  .button-container {
+    display: flex;
+    overflow-x: auto; /* Enable horizontal scrolling */
+    white-space: nowrap; /* Prevent wrapping */
+    gap: 10px; /* Add spacing between buttons */
+    padding: 10px; /* Add some padding */
+    scroll-behavior: smooth; /* Smooth scrolling */
+    background-color: black; /* Optional: Background color for better visibility */
+  }
+
+  /* Style for buttons */
+  .search-toggle {
+    display: flex;
+    flex-direction: column; /* Stack image and text vertically */
+    align-items: center; /* Center align content */
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #fff;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    white-space: normal; /* Allow text to wrap */
+  }
+
+  /* Style for images */
+  .search-toggle img {
+    width: 80px; /* Square size */
+    height: 80px;
+    border-radius: 10px; /* Optional: Slightly rounded corners */
+    margin-bottom: 5px; /* Space between image and text */
+  }
+
+  /* Add scrollbar styles (optional) */
+  .button-container::-webkit-scrollbar {
+    height: 8px; /* Horizontal scrollbar height */
+  }
+  .button-container::-webkit-scrollbar-thumb {
+    background: black;
+    border-radius: 17px;
+  }
+  .button-container::-webkit-scrollbar-track {
+    background: black;
+  }
+</style>
+
+<script>
+  const buttonData = [
+    { title: '2023', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSDc4ufhyIcleY8LSHWP1_vGOkHVkBFH2Wu7avXxTVAwErkxtgWyf_i0as_&s=10' },
+    { title: 'English Songs', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbBXHhcyl9668EHD7CwIF2yHUwciwalTiiz_7FC7gM8XrgSezRPvFV_LA&s=10' },
+    { title: 'Edward Maya', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTlwdWhhRl6Hjf3mawrtj2gVfq0CBcxKaau0eLUk39ztPf1b3Brl6pJ7Ww&s=10' },
+    { title: 'Zack Knight', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHORLxFy2AKaE3cqq1rtbytOfaULSH5DddPi5S0MufXWw5cdOx9qSXQI8&s=10' },
+    { title: 'Akcent', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkXAz7snlJyFEUYzlk99P2JZM1pGcTxWY6sw&usqp=CAU' },
+    { title: 'Arijit Singh', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR8jgkZ77OOBPGE-2fLqe1TQPwbj_TPcglffEj0J81Klfx5W7rn2SeNYEM&s=10' },
+    {title: 'Lata Mangeshkar ', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSTkF5Q9r1dCkAys2okEfHqVuqvnNsp7R-dJg&usqp=CAU'},
+    {title: 'AR Rahman' , img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUcKUkXTsPU34_2Codwkg_Y6Eh2vY2hgVm8GEuioz3whfWaEniMnx14cxN&s=10'},
+    {title: 'Rahat fateh ali khan', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5LlJ6Z-Zurq_qVQ8c0gvEN5gtbDTXno85EQ&usqp=CAU'},
+    {title: 'Nusrat Fateh ali khan', img: 'https://i.scdn.co/image/ab6761610000e5eb46444c5c2069fe5470bec996'},
+    {title: 'Hansraj Raghuwanshi', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRofcPdxjqKGI4TlCDFDKwh0VI5zSS70p5wPx2kLSOXnpeFKfXJVJgh-Sc&s=10'},
+    {title: 'BTS', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqeHMhbnvEcxKpBp7bfYR9_yeAcfSKSkN2bDx2u3HjhY0NMLf9v3gtgFA&s=10'},
+    {title: 'Alan Walker', img: 'https://play-lh.googleusercontent.com/DOZiXxrQvSmjqQczCDr-IzFbxN9_sl8O7RoRuIecpDbMVNBEkLAHBf3qhsASRuCOBABt'},
+    {title: 'Enrique lglesias', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjxp1LFTFjQobKRzPIzbauMD1YbSRRh8O7ebEOoUhmb6c0Vp39PZ2VeYFi&s=10'},
+    {title: 'Pitbull', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT8BJyfxjFZatQP_xAvky5IsrxTXNDAe3aVWNdXEiz7wKRmWejiB47VmKI1&s=10'},
+    {title: 'Imran Khan', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCCfxNtaePzCYUQT8ymUyJttr6ukDh9LGhMjwVQ2cAl-BF5t_FBxG4cfEF&s=10'},
+    {title: 'DJ Snake', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-Rx-6jYJa33KAarWZ1R5_EdKAo8Rb95WMyw&usqp=CAU'},
+    {title: 'Darshan RAval', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR449j-nXH0UhZUFoCrMGFojepouD-IAZcfPQ7j958RPJTYQRkmxy9sx6LE&s=10' },
+    {title: 'Jubin Nautilyal', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQIcfLRjqg6RVFxAkVx-pZeYl9eCZKbIlZ6QQ&usqp=CAU'},
+    {title: 'Armaan Malik', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTU9XPZT1UA7q5l4f5v3S9orSiFkI5y5UK6-g&usqp=CAU'},
+    {title: 'Old Song', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnMtBuHZuFfWQpCXGW3TEAOIvaBl4UaOOWJCX39QIV30ItEp7ZKlopm4k&s=10'},
+    {title: 'Adele', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQKr3WHl5FTF4NtA-C7Ezj2QT0s_ulzcT6QOTDiV-03EsXu8yfhckRm9c&s=10'},
+    {title: 'Billie Eilish', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTf5HUAGDT0UPLK0Fi3HgSWiD_FNR8YavBg91mirdGKizvQdYHWDyJCjgCn&s=10'},
+    {title: 'Imagine Dragons', img: 'https://i.ytimg.com/vi/DqIWqHoJVss/hq720.jpg?sqp=-oaymwE7CK4FEIIDSFryq4qpAy0IARUAAAAAGAElAADIQj0AgKJD8AEB-AH-CYAC0AWKAgwIABABGGUgWChIMA8=&rs=AOn4CLCQdqzJHXmPWevrsu7hM-eM_50KBw'},
+    {title: 'Ed Sheeran', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3AL4LVxG6eFZtYnLhSc2ygAo5_lOknuafOA0O4XpDtXaC2EyDQnYBOieT&s=10'},
+    {title: 'Neha Kakkar', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQs39otY6OVGdZd-Zdlk5EoxSAcg7U1abLnrA&usqp=CAU'},
+    {title: 'Badshah', img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQatN6pO0teCcOZUHJ2PrZcPdtZ9MTBApYbS-LVKFRHQh36r_luReqkZf4&s=10'},
+    {title: 'Atif Aslam', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSeA7SW8ObaqE_Cqkn_BiFoiEecpgnI9RMsm5TumoLxj-r9bNPgvld1KKw&s=10'},
+    {title: 'Guru Randhawa',img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTO78kyCZfmGDiiaCnXNL2nyBEcYawtX1pUyunCM21YBvqm_MpAEqZdLWc&s=10'},
+    {title: 'Shreya Ghoshal', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-f1BvyGO9TnDa0DdhmVLvQZZShizQ2F7gGxUK9IoRq-ioLa9NRxP_F5MM&s=10'},
+      { title: 'Tony Kakkar', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUHqnJfm-6XJuqfEpKZehtIBSbLJbVUvwa_vLFm7VgDul-THdp7uCWplo&s=10' },
+      { title: 'Harrdy Sandhu', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRIGVG__li-PdJST6UH40425ZUIuplrwqf67mWdJLyxnBCnWMclcFQ_ON0&s=10' },
+      { title: 'Armaan Malik', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRNp2G4bZytjHq_4QdWK9XbWeGuWSPAKomhJEC9cM-90ChP93IFczacrK_D&s=10' },
+      { title: 'Diljit Dosanjh', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQf396eiDtcicz8WMHqYJ1utwcDK8PSAOCNkQ&usqp=CAU' },
+      { title: 'Sonu Nigam', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRUxOHbwab2WOpAQAJmqvBszE-vyXQ_tZY5hGsi_YAZ9UW_g_AsVY5xK_s&s=10' },
+      { title: 'Vishal Dadlani', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuoiontOALhwmm2yDSNb9-RoBVR8YP7OOPO73gxvE4ECBKtWX2wkFHUIM&s=10' },
+      { title: 'Kanika Kapoor', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTFPrv8UlkrfpdN6UfKDEh_qSxl7pnz5ApaupBZoJjwPiF1qCMlDBYKPi8&s=10' },
+      { title: 'Sukhwinder Singh', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQrzeAIf5WN9aM6Yyyd0gMHULslbAeGiKrAZb7W5EdeMmfPto2t5_YgHgQ&s=10' },
+      { title: 'Sunidhi Chauhan', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREqo_QExWtIjvPtDqTFoA7wty4hRYQCeXpdg&usqp=CAU' },
+      { title: 'Mika Singh', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJGQCGzMGqo8Sdc9edUGkhYEN4xkBO289BLg&usqp=CAU' },
+      { title: 'Shaan', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOn62gy4mNSexocCqGNTY4XkEXAZUsIS_MDitEwnKuQxvXcYGsC-fRk1Sz&s=10' },
+      { title: 'Mohit Chauhan', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRGXMvYyDaZYmAVT5mHko_ucQkEGiR4-kw0fQ&usqp=CAU' },
+      { title: 'Pritam', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1uKyWcOfzcReH5hzeeR1uJVOq6Fv7H6enbNxfWkcKDr_pnPvQT3wufcY&s=10' },
+      { title: 'KK', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4X6B-g8w6dCSXq_F3fLAYRQvmbwr3rKRV7tJUxqSYmhQYuu3Lg6dhWcra&s=10' },
+      { title: 'Yo Yo Honey Singh', img: 'https://i.scdn.co/image/ab6761610000e5ebbc7e4fffd515b47ff1ebbc1f' },
+      { title: 'Taylor Swift', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRHl1YedUqMvP-eqxEbsv89FUZw2bJ8yBB__Vhpb5ZBZusj4wvl5RbK0s0&s=10' },
+      { title: 'Sia', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBhpdyfXNxW_gkhg_SnsaaklsZrXjw8I_e3I3K8HB4rehfAY_Jy4IuMwI&s=10' },
+      { title: 'Radioactive', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTe7MYE1jC0H77PS8c5tyH9tj0R59qfBeDBvQ&usqp=CAU' },
+      { title: 'Halsey', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRrdT3PMYcwvw46502-nvaDrzsiBHzVUVImMu5v1NC4mA8gX8GrSXcEW7Tm&s=10' },
+      { title: 'The Chainsmokers', img: 'https://thisis-images.spotifycdn.com/37i9dQZF1DZ06evO3DbIU8-default.jpg' },
+      { title: 'Drake', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtmacxoVAHW6nSYUYSr8dSPmIzYOvQs1b819hEqhgm8V9tiACtbi0TH_9m&s=10' },
+      { title: 'Justin Bieber', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTa9tqHlzWE6q6e9y9JYi4bEE8e2-gc1jdpWQl9O13Eh_shCkTFb7A-W_Ui&s=10' },
+      { title: 'Beyonce', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQETqtQj5UnUp5t6XdMvzf9FVKd0yzQZvHzybGZJfOqxp5GRiSVwEUJikI&s=10' },
+      { title: 'The Weeknd', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRN4Z1yNIyeOgKEwn4DxzrD4C-yqOnj3xd0mtqxO_gx-fwBBJZ4dvzbDNh5&s=10' },
+      { title: 'Rihanna', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDLlL842HeIxddp3egUSG_kn-e_nT7xeNsO6R93u7l4tRs97IAS20jnvSq&s=10' },
+      { title: 'Lady Gaga', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_lu_64X21Wpf7werrMJItR2PGwtWjI-CxMJSR5-JmP88XJpoEvtb1ORY&s=10' },
+      { title: 'AC/DC', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgPd2K1Iz0GwtMUYl7wsF-j9fBtGXlswhGawzVIqsdH34MOqIfKFw5OIc&s=10' },
+      { title: 'Michael Jackson', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRz_o92DVUthNk1UIuXtOvxcJ5Sg5K5PPUE3kimliG_BSTkxvW5yPPXrI-y&s=10' },
+      { title: 'The Rolling Stones', img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQ10IHJNF3V2CY0tVGCghyEHZC2aI67vYSOw&usqp=CAU' }
+    // Add more items as needed
+  ];
+
+  const buttonContainer = document.querySelector('.button-container');
+
+  buttonData.forEach(item => {
+    // Create button element
+    const button = document.createElement('button');
+    button.classList.add('search-toggle');
+    button.setAttribute('onclick', `doSaavnSearch('${item.title}')`);
+
+    // Create image element
+    const img = document.createElement('img');
+    img.src = item.img;
+    img.alt = item.title;
+
+    // Create text element
+    const text = document.createElement('span');
+    text.textContent = item.title;
+
+    // Append image and text to the button
+    button.appendChild(img);
+    button.appendChild(text);
+
+    // Append button to container
+    buttonContainer.appendChild(button);
+  });
+</script>
+                   
+                        <p class="footer" align="center">
+                            <h1>created by Mr Dheeraj Kumar </h1>.<br><br>
+                            Originally by Mr.KDS.<br>
+                            Re-Designed by Mr.KDS
+                        </p>
+                        <div style="padding-bottom: 40px;">
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+<div id="audio-player" style="z-index: 99; background: #ffffff33; width: 100%; margin: 0px; color: var(--light); backdrop-filter: blur(4px); border-top-left-radius: 10px; border-top-right-radius: 20px; padding: 10px 0;">
+    <!-- Song Image and Name--->
+    <div class="row" style="margin: 0px; align-items: center;">
+    <!-- Image section to show the album art -->
+    <div class="col-auto fit-content" style="padding: 0px;">
+        <img class="img-fluid d-inline" id="player-image" style="height: 75px; width: 75px; border-radius: 10px;" src="https://i.pinimg.com/originals/ed/54/d2/ed54d2fa700d36d4f2671e1be84651df.jpg" loading="lazy">
+    </div>
+    <!-- Song and Album Name --->
+    <div class="col fit-content" style="padding: 0px;">
+        <div style="max-height: 24px; max-width: 95%; word-wrap: normal; padding-left: 20px;">
+            <span id="player-name">Song Name</span><br>
+            <span id="player-album">Album</span>
+        </div>
+    </div>
+</div>
+
+    <!-- Audio Controls -->
+
+    <div class="controls" style="text-align: center; margin-top: 10px;">
+        <button id="prev" class="control-button" onclick="prevSong()">&#9664;</button>
+        <button id="play-pause" class="control-button" onclick="togglePlayPause()">&#9658;</button>
+        <button id="next" class="control-button" onclick="nextSong()">&#9654;</button>
+    </div>
+
+    <!-- Progress Bar and Time -->
+  <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+        <input type="range" id="progress-slider" min="0" max="100" value="0" 
+               oninput="manualUpdate()" 
+               onmousedown="stopAutoUpdate()" 
+               onmouseup="resumeAutoUpdate()">
+        <span id="song-time">00:00 / 00:00</span>
+    </div>
+
+    <!-- Song Queue -->
+    <div id="song-queue" style="margin-top: 15px;">
+      <div id="queue-baar"></div>
+      </div>
+</div>
+
+    <!-- floating downloader popup -->
+    <div class=”float-button” style="width:30px; height:30px; border-radius:50%; background-color:#fff; box-shadow: 0 0 10px #000; cursor:pointer; position:fixed;top:50px; right:20px; z-index:9999;">
+    <!-- download icon -->
+    <a href="javascript:void(0);" class="btn btn-primary" id="mpopupLink">
+    <img src="https://img.icons8.com/ios/50/000000/download.png">
+    </a></div>
+    <style>
+                                
+        #saavn-results{
+        display: flex;
+        flex-wrap: wrap;
+        }
+        /* Three columns on desktop */
+        @media screen and (min-width: 992px) {
+        .song-container {
+            width: calc(33.33% - 20px);
+            margin: 0 10px 20px 10px;
+        }
+        }
+
+        /* Two columns on desktop */
+        @media screen and (min-width: 768px) and (max-width: 991px) {
+        .song-container {
+            width: calc(50% - 20px);
+            margin: 0 10px 20px 10px;
+        }
+        }
+
+        /* One column on mobile */
+        @media screen and (max-width: 767px) {
+        .song-container {
+            width: calc(100% - 20px);
+            margin: 0 10px 20px 10px;
+        }
+        }
+        .search-toggle-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        width: 95%;
+        margin: 0 auto;
+        }
+        .search-toggle {
+        background: rgba(0, 0, 0, 0.1);
+        color: #fff;
+        font-size: 18px;
+        font-family: Aclonica, sans-serif;
+        padding: 6px;
+        border-style: none;
+        }
+        .search-toggle:nth-child(10n+1){color:#ceea82}.search-toggle:nth-child(10n+2){color:#70cee2}.search-toggle:nth-child(10n+3){color:#ef2b2d}.search-toggle:nth-child(10n+4){color:#23b805}.search-toggle:nth-child(10n+5){color:var(--primary)}.search-toggle:nth-child(10n+6){color:#cee007}.search-toggle:nth-child(10n+7){color:#ff77a8}.search-toggle:nth-child(10n+8){color:#21a9af}.search-toggle:nth-child(10n+9){color:var(--warning)}.search-toggle:nth-child(10n+10){color:#e316e7}
+    </style>
+    <style>
+        .mpopup {
+            position: fixed;
+            overflow: auto;
+            overflow-x: hidden;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            width: auto;
+            height: auto;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: none;
+        }
+        ul.nobullets {
+  list-style-type: none; /* Remove bullets */
+  padding: 0; /* Remove padding */
+  margin: 0; /* Remove margins */
+}
+    </style>
+    <!-- Modal popup box --->
+<div id="mpopupBox" class="mpopup">
+    <!-- Modal content --->
+    <div class="modal-content">
+    
+        <div class="modal-header" style="display:inline;">
+            <span class="close">×</span>
+            <h2>Downloads</h2>
+        </div>
+        <div class="modal-body">
+            <!-- list of songs, with a small cover art pic, name, album name --->
+            <row>
+            <ul id="download-list" class="nobullets">
+                    <!--<li>
+                    <div class="col">
+                        
+                        <img id="download-cover" src="https://i.pinimg.com/originals/ed/54/d2/ed54d2fa700d36d4f2671e1be84651df.jpg" width="50px">
+                        <div style="display: inline;">
+                        <span id="download-name">Song</span>
+                        <span id="download-album">Album</span>
+                        <br>
+                        <span id="download-size">Size</span>
+                        <span id="download-status" style="color:green">Compiling.</span>
+                        </div>
+                    </div>
+                    <hr>
+                    </li>-->
+                    
+
+
+                
+                </ul></row>
+        </div>
+        <div class="modal-footer" style="text-align: center;">
+            <p>Don't flood the Media Server, Have patience...</p>
+        </div>
+    
+    </div>
+</div>
+<script>
+    // Select modal
+    var mpopup = document.getElementById('mpopupBox');
+    
+    // Select trigger link
+    var mpLink = document.getElementById("mpopupLink");
+    
+    // Select close action element
+    var close = document.getElementsByClassName("close")[0];
+    
+    // Open modal once the link is clicked
+    mpLink.onclick = function() {
+        mpopup.style.display = "block";
+    };
+    
+    // Close modal once close element is clicked
+    close.onclick = function() {
+        mpopup.style.display = "none";
+    };
+    
+    // Close modal when user clicks outside of the modal box
+    window.onclick = function(event) {
+        if (event.target == mpopup) {
+            mpopup.style.display = "none";
+        }
+    };
+    </script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.1/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/js/functions.js"></script>
+    <script src="assets/js/saavn-search.js"></script>
+</body>
+
+</html>
